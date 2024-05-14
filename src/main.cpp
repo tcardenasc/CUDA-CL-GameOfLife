@@ -62,14 +62,13 @@ int main(int argc, char *argv[]) {
     }
 
     std::ofstream out;
-    out.open(argv[4], std::ios::out);
+    out.open(argv[4], std::ios::app | std::ios::out);
     if (!out.is_open()) {
         std::cerr << "Error while opening file: '" << argv[4] << "'" << std::endl;
         return 4;
     }
     out << n << "," << m << "," << iterations << "," << t.create_data << "," << t.execution << "," << t.total()
         << "\n";
-    out << cpuLife;
 
     std::cout << "Data written to " << argv[4] << std::endl;
     return 0;
