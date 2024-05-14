@@ -10,7 +10,6 @@ if(OpenCL_FOUND)
   add_subdirectory(cl)
 endif()
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 set(CPU_SOURCES main.cpp kernel.cpp)
 add_executable(${PROJECT_NAME}CPU ${CPU_SOURCES})
 
