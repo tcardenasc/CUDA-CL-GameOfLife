@@ -1,5 +1,15 @@
 #include "kernel.h"
 
+void Clear() {
+#if defined _WIN32
+    system("cls");
+#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
+    system("clear");
+#elif defined (__APPLE__)
+    system("clear");
+#endif
+}
+
 CpuLife::CpuLife() :
         m_data(nullptr),
         m_resultData(nullptr),
@@ -20,10 +30,19 @@ void CpuLife::freeBuffers() {
     m_dataLength = 0;
 }
 
-void CpuLife::allocBuffers() {
+bool CpuLife::allocBuffers() {
+    freeBuffers();
     m_dataLength = m_worldWidth * m_worldHeight;
-    m_data = new ubyte[m_dataLength];
-    m_resultData = new ubyte[m_dataLength];
+
+    try {
+        m_data = new ubyte[m_dataLength];
+        m_resultData = new ubyte[m_dataLength];
+    }
+    catch (std::bad_alloc &e) {
+        freeBuffers();
+        return false;
+    }
+    return true;
 }
 
 void CpuLife::resize(size_t width, size_t height) {
@@ -32,7 +51,7 @@ void CpuLife::resize(size_t width, size_t height) {
     m_worldHeight = height;
 }
 
-void CpuLife::init() {
+void CpuLife::initRandom() {
     for (size_t i = 0; i < m_dataLength; ++i) {
         m_data[i] = m_randomGen() & 1;
     }
@@ -55,7 +74,20 @@ void CpuLife::iterateSerial(size_t iterations) {
         }
 
         std::swap(m_data, m_resultData);
+
+        Clear();
+        std::cout << *this;
     }
+}
+
+std::ostream &operator<<(std::ostream &os, const CpuLife &cpuLife) {
+    for (size_t i = 0; i < cpuLife.m_dataLength; ++i) {
+        os << (cpuLife.m_data[i] ? "■" : "□");
+        if ((i + 1) % cpuLife.m_worldWidth == 0) {
+            os << std::endl;
+        }
+    }
+    return os;
 }
 
 

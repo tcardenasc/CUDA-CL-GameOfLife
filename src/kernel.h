@@ -1,4 +1,5 @@
 #include <random>
+#include <iostream>
 
 typedef unsigned char ubyte;
 
@@ -32,11 +33,13 @@ public:
 
     void freeBuffers();
 
-    void allocBuffers();
+    bool allocBuffers();
 
     void resize(size_t width, size_t height);
 
-    void init();
+    void initRandom();
 
     void iterateSerial(size_t iterations);
+
+    friend std::ostream &operator<<(std::ostream &os, const CpuLife &cpuLife);
 };
