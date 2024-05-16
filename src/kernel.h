@@ -21,25 +21,18 @@ protected:
     // World size
     size_t m_worldWidth;
     size_t m_worldHeight;
-    size_t m_dataLength; // m_worldWidth * m_worldHeight
+    size_t m_worldSize; // m_worldWidth * m_worldHeight
 
     // Random number generator
     std::mt19937 m_randomGen;
 
 public:
     CpuLife();
-
     ~CpuLife();
-
     void freeBuffers();
-
     bool allocBuffers();
-
     void resize(size_t width, size_t height);
-
     void initRandom();
-
     void iterateSerial(size_t iterations);
-
     friend std::ostream &operator<<(std::ostream &os, const CpuLife &cpuLife);
 };

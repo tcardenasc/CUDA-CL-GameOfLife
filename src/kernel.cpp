@@ -15,8 +15,8 @@ CpuLife::CpuLife() :
         m_resultData(nullptr),
         m_worldWidth(0),
         m_worldHeight(0),
-        m_dataLength(0),
-        m_randomGen(std::random_device()()) {}
+        m_worldSize(0),
+        m_randomGen(std::random_device{}()) {}
 
 CpuLife::~CpuLife() {
     freeBuffers();
@@ -27,16 +27,16 @@ void CpuLife::freeBuffers() {
     m_data = nullptr;
     delete[] m_resultData;
     m_resultData = nullptr;
-    m_dataLength = 0;
+    m_worldSize = 0;
 }
 
 bool CpuLife::allocBuffers() {
     freeBuffers();
-    m_dataLength = m_worldWidth * m_worldHeight;
+    m_worldSize = m_worldWidth * m_worldHeight;
 
     try {
-        m_data = new ubyte[m_dataLength];
-        m_resultData = new ubyte[m_dataLength];
+        m_data = new ubyte[m_worldSize];
+        m_resultData = new ubyte[m_worldSize];
     }
     catch (std::bad_alloc &e) {
         freeBuffers();
@@ -52,7 +52,7 @@ void CpuLife::resize(size_t width, size_t height) {
 }
 
 void CpuLife::initRandom() {
-    for (size_t i = 0; i < m_dataLength; ++i) {
+    for (size_t i = 0; i < m_worldSize; ++i) {
         m_data[i] = m_randomGen() & 1;
     }
 }
@@ -75,13 +75,14 @@ void CpuLife::iterateSerial(size_t iterations) {
 
         std::swap(m_data, m_resultData);
 
-        Clear();
-        std::cout << *this;
+//        uncomment below lines to see the simulation
+//        Clear();
+//        std::cout << *this;
     }
 }
 
 std::ostream &operator<<(std::ostream &os, const CpuLife &cpuLife) {
-    for (size_t i = 0; i < cpuLife.m_dataLength; ++i) {
+    for (size_t i = 0; i < cpuLife.m_worldSize; ++i) {
         os << (cpuLife.m_data[i] ? "■" : "□");
         if ((i + 1) % cpuLife.m_worldWidth == 0) {
             os << std::endl;

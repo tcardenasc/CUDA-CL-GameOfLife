@@ -15,7 +15,7 @@ struct Times {
 Times t;
 CpuLife cpuLife;
 
-bool simulate(size_t N, size_t M, size_t iterations) {
+bool simulate(int N, int M, int iterations) {
     using std::chrono::microseconds;
     cpuLife.resize(N, M);
     if(!cpuLife.allocBuffers()) {
