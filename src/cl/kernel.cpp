@@ -3,6 +3,16 @@
 #include <vector>
 #include <stdexcept>
 
+void Clear() {
+#if defined _WIN32
+    system("cls");
+#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
+    system("clear");
+#elif defined (__APPLE__)
+    system("clear");
+#endif
+}
+
 GpuLife::GpuLife() :
         m_worldWidth(0),
         m_worldHeight(0),
@@ -60,18 +70,20 @@ void GpuLife::initRandom() {
 void GpuLife::iterate(size_t iterations) {
     cl_int err;
 
+    size_t localWorkSize[] = {32, 32};
     size_t globalWorkSize[] = {m_worldWidth, m_worldHeight};
-    err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &dataBuffer);
-    checkError(err, "Setting kernel arg 0");
-    err = clSetKernelArg(kernel, 1, sizeof(cl_mem), &resultBuffer);
-    checkError(err, "Setting kernel arg 1");
-    err = clSetKernelArg(kernel, 2, sizeof(unsigned int), &m_worldWidth);
-    checkError(err, "Setting kernel arg 2");
-    err = clSetKernelArg(kernel, 3, sizeof(unsigned int), &m_worldHeight);
-    checkError(err, "Setting kernel arg 3");
 
     for (size_t i = 0; i < iterations; ++i) {
-        err = clEnqueueNDRangeKernel(commandQueue, kernel, 2, nullptr, globalWorkSize, nullptr, 0, nullptr, nullptr);
+        err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &dataBuffer);
+        checkError(err, "Setting kernel arg 0");
+        err = clSetKernelArg(kernel, 1, sizeof(cl_mem), &resultBuffer);
+        checkError(err, "Setting kernel arg 1");
+        err = clSetKernelArg(kernel, 2, sizeof(unsigned int), &m_worldWidth);
+        checkError(err, "Setting kernel arg 2");
+        err = clSetKernelArg(kernel, 3, sizeof(unsigned int), &m_worldHeight);
+        checkError(err, "Setting kernel arg 3");
+
+        err = clEnqueueNDRangeKernel(commandQueue, kernel, 2, nullptr, globalWorkSize, localWorkSize, 0, nullptr, nullptr);
         checkError(err, "Enqueueing kernel");
         clFinish(commandQueue);
 
@@ -79,6 +91,7 @@ void GpuLife::iterate(size_t iterations) {
         std::swap(dataBuffer, resultBuffer);
 
         // Debug output to print the current iteration
+        Clear();
         std::cout << "Iteration: " << i + 1 << std::endl;
         std::cout << *this;  // Print the current state of the world
     }
