@@ -1,11 +1,13 @@
 // kernel.cpp
 #include "kernel.h"
+#include <vector>
+#include <stdexcept>
 
 GpuLife::GpuLife() :
         m_worldWidth(0),
         m_worldHeight(0),
         m_worldSize(0),
-        m_randomGen(std::random_device{}()) {
+        m_randomGen(std::random_device()()) { // Correct initialization
     context = createContext();
     commandQueue = createCommandQueue(context, &device);
     program = createProgram(context, device, "kernel.cl");
@@ -21,8 +23,8 @@ GpuLife::~GpuLife() {
 }
 
 void GpuLife::freeBuffers() {
-    clReleaseMemObject(dataBuffer);
-    clReleaseMemObject(resultBuffer);
+    if (dataBuffer) clReleaseMemObject(dataBuffer);
+    if (resultBuffer) clReleaseMemObject(resultBuffer);
     m_worldSize = 0;
 }
 
@@ -73,9 +75,15 @@ void GpuLife::iterate(size_t iterations) {
         checkError(err, "Enqueueing kernel");
         clFinish(commandQueue);
 
+        // Swap the data buffers
         std::swap(dataBuffer, resultBuffer);
+
+        // Debug output to print the current iteration
+        std::cout << "Iteration: " << i + 1 << std::endl;
+        std::cout << *this;  // Print the current state of the world
     }
 
+    // Final state read from the buffer
     std::vector<ubyte> result(m_worldSize);
     err = clEnqueueReadBuffer(commandQueue, dataBuffer, CL_TRUE, 0, sizeof(ubyte) * m_worldSize, result.data(), 0, nullptr, nullptr);
     checkError(err, "Reading result buffer");

@@ -1,6 +1,8 @@
 BUILD=build
 PROJECT=MyProject
 
+CXX = g++
+
 .PHONY: init clean test run
 
 all: cl cpu cuda
@@ -13,6 +15,7 @@ cuda: init
 
 cl: init
 	@cp src/cl/kernel.cl $(BUILD)/src/cl/kernel.cl
+	@cmake -S . -B $(BUILD) -DCMAKE_CXX_COMPILER=$(CXX)
 	@cmake --build $(BUILD) --target $(PROJECT)CL -j 10
 
 cpu: init
