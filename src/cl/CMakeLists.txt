@@ -1,4 +1,4 @@
-set(CL_SOURCES main.cpp kernel.cpp opencl_setup.cpp)
+set(CL_SOURCES main.cpp)
 set(CL_KERNEL ${CMAKE_CURRENT_SOURCE_DIR}/kernel.cl)
 set(CL_VERSION ${OpenCL_VERSION_MAJOR}${OpenCL_VERSION_MINOR}0)
 
@@ -6,11 +6,3 @@ add_executable(${PROJECT_NAME}CL ${CL_SOURCES})
 target_link_libraries(${PROJECT_NAME}CL PRIVATE ${OpenCL_LIBRARY})
 target_include_directories(${PROJECT_NAME}CL PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_compile_definitions(${PROJECT_NAME}CL PRIVATE CL_HPP_TARGET_OPENCL_VERSION=${CL_VERSION} CL_HPP_MINIMUM_OPENCL_VERSION=${CL_VERSION})
-
-
-add_custom_command(
-    TARGET ${PROJECT_NAME}CL POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/src/cl/kernel.cl
-            ${CMAKE_BINARY_DIR}/src/cl/kernel.cl
-)

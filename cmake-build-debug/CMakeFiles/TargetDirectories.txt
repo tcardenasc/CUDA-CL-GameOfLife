@@ -1,0 +1,8 @@
+/Users/gmedel/Documents/Graficos/CUDA-CL-Template-master/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/gmedel/Documents/Graficos/CUDA-CL-Template-master/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/gmedel/Documents/Graficos/CUDA-CL-Template-master/cmake-build-debug/src/CMakeFiles/MyProjectCPU.dir
+/Users/gmedel/Documents/Graficos/CUDA-CL-Template-master/cmake-build-debug/src/CMakeFiles/edit_cache.dir
+/Users/gmedel/Documents/Graficos/CUDA-CL-Template-master/cmake-build-debug/src/CMakeFiles/rebuild_cache.dir
+/Users/gmedel/Documents/Graficos/CUDA-CL-Template-master/cmake-build-debug/src/cl/CMakeFiles/MyProjectCL.dir
+/Users/gmedel/Documents/Graficos/CUDA-CL-Template-master/cmake-build-debug/src/cl/CMakeFiles/edit_cache.dir
+/Users/gmedel/Documents/Graficos/CUDA-CL-Template-master/cmake-build-debug/src/cl/CMakeFiles/rebuild_cache.dir
