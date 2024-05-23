@@ -30,12 +30,12 @@ protected:
     std::mt19937 m_randomGen;
 public:
     GpuLife();
-    ~GpuLife();
+//    ~GpuLife(); // Destructor causes problems because it invokes cudaFree when cuda driver is unloaded
     void freeBuffers();
     bool allocBuffers();
     void resize(size_t width, size_t height);
     void initRandom(ubyte *data, size_t size);
     void copyToDevice(ubyte *data, size_t size);
-    void iterate(size_t iterations, size_t blockSize, int debug);
+    void iterate(size_t iterations, size_t blockSize, int debug, int if_use);
     void copyToHost(ubyte *data, size_t size);
 };

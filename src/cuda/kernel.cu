@@ -44,9 +44,9 @@ GpuLife::GpuLife() :
         m_randomGen(std::random_device{}()) {
 }
 
-GpuLife::~GpuLife() {
-    freeBuffers();
-}
+//GpuLife::~GpuLife() {
+//    freeBuffers();
+//}
 
 void GpuLife::freeBuffers() {
     HANDLE_ERROR(cudaFree(d_data));
@@ -88,7 +88,7 @@ void GpuLife::copyToDevice(ubyte *data, size_t size) {
     HANDLE_ERROR(cudaMemcpy(d_data, data, size, cudaMemcpyHostToDevice));
 }
 
-void GpuLife::iterate(size_t iterations, size_t blockSize, int debug) {
+void GpuLife::iterate(size_t iterations, size_t blockSize, int debug, int if_use) {
     size_t gridSize = (m_worldWidth * m_worldHeight + blockSize - 1) / blockSize;
 
     for (size_t i = 0; i < iterations; i++) {
