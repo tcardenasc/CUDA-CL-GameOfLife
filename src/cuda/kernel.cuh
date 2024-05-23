@@ -36,6 +36,6 @@ public:
     void resize(size_t width, size_t height);
     void initRandom(ubyte *data, size_t size);
     void copyToDevice(ubyte *data, size_t size);
-    void iterate(size_t iterations, size_t blockSize, size_t gridSize);
+    void iterate(size_t iterations, size_t blockSize, int debug);
     void copyToHost(ubyte *data, size_t size);
 };

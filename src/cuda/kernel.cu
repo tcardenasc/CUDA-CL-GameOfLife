@@ -88,23 +88,27 @@ void GpuLife::copyToDevice(ubyte *data, size_t size) {
     HANDLE_ERROR(cudaMemcpy(d_data, data, size, cudaMemcpyHostToDevice));
 }
 
-void GpuLife::iterate(size_t iterations, size_t blockSize, size_t gridSize) {
+void GpuLife::iterate(size_t iterations, size_t blockSize, int debug) {
+    size_t gridSize = (m_worldWidth * m_worldHeight + blockSize - 1) / blockSize;
+
     for (size_t i = 0; i < iterations; i++) {
         lifeKernel<<<gridSize, blockSize>>>(d_data, m_worldWidth, m_worldHeight, d_resultData);
         HANDLE_ERROR(cudaGetLastError());
         HANDLE_ERROR(cudaDeviceSynchronize());
         std::swap(d_data, d_resultData);
 
-//        uncomment below lines to see the simulation
-//        auto tmp = new ubyte[m_worldSize];
-//        HANDLE_ERROR(cudaMemcpy(tmp, d_resultData, m_worldSize, cudaMemcpyDeviceToHost));
-//        Clear();
-//        for (size_t k = 0; k < m_worldSize; k++) {
-//            std::cout << (tmp[k] ? "■" : "□");
-//            if ((k + 1) % m_worldWidth == 0) {
-//                std::cout << std::endl;
-//            }
-//        }
+        if (debug) {
+            auto tmp = new ubyte[m_worldSize];
+            HANDLE_ERROR(cudaMemcpy(tmp, d_resultData, m_worldSize, cudaMemcpyDeviceToHost));
+            Clear();
+            std::cout << "Iteration: " << i + 1 << std::endl;
+            for (size_t k = 0; k < m_worldSize; k++) {
+                std::cout << (tmp[k] ? "■" : "□");
+                if ((k + 1) % m_worldWidth == 0) {
+                    std::cout << std::endl;
+                }
+            }
+        }
     }
 }
 

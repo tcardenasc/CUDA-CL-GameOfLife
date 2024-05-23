@@ -19,7 +19,7 @@ struct Times {
 Times t;
 GpuLife gpuLife;
 
-bool simulate(int worldWidth, int worldHeight, int blockSize, int gridSize, int iterations) {
+bool simulate(int worldWidth, int worldHeight, int blockSize, int iterations, int debug) {
     using std::chrono::microseconds;
     int worldSize = worldWidth * worldHeight;
     auto data = new ubyte[worldSize];
@@ -47,7 +47,7 @@ bool simulate(int worldWidth, int worldHeight, int blockSize, int gridSize, int 
 
     // Execute the function on the device
     t_start = std::chrono::high_resolution_clock::now();
-    gpuLife.iterate(iterations, blockSize, gridSize);
+    gpuLife.iterate(iterations, blockSize, debug);
     t_end = std::chrono::high_resolution_clock::now();
     t.execution =
             std::chrono::duration_cast<std::chrono::microseconds>(t_end - t_start)
@@ -77,19 +77,19 @@ bool simulate(int worldWidth, int worldHeight, int blockSize, int gridSize, int 
 
 int main(int argc, char *argv[]) {
     if (argc != 7) {
-        std::cerr << "Uso: " << argv[0] << " <world width> <world height> <block size> <grid size> <iterations> <output file>"
+        std::cerr << "Uso: " << argv[0] << " <world width> <world height> <block size> <iterations> <output file> <0|1 (debug)>"
                   << std::endl;
         return 2;
     }
+
     int n = std::stoi(argv[1]);
     int m = std::stoi(argv[2]);
     int bs = std::stoi(argv[3]);
-    int gs = std::stoi(argv[4]);
-    int it = std::stoi(argv[5]);
-    auto file = argv[6];
+    int it = std::stoi(argv[4]);
+    auto file = argv[5];
+    int db = std::stoi(argv[6]);
 
-
-    if (!simulate(n, m, bs, gs, it)) {
+    if (!simulate(n, m, bs, it, db)) {
         std::cerr << "CUDA: Error while executing the simulation" << std::endl;
         return 3;
     }
@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
         return 4;
     }
     // params
-    out << n << "," << m << "," << bs << "," << gs << "," << it << ",";
+    out << n << "," << m << "," << bs << "," << it << ",";
     // times
     out << t.create_data << "," << t.copy_to_device << "," << t.execution << "," << t.copy_to_host << "," << t.total()
         << "\n";
