@@ -32,7 +32,7 @@ public:
     bool allocBuffers();
     void resize(size_t width, size_t height);
     void initRandom();
-    void iterate(size_t iterations);
+    void iterate(size_t iterations, size_t workSize);
     friend std::ostream &operator<<(std::ostream &os, GpuLife &gpuLife);
 };
 

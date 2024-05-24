@@ -15,7 +15,7 @@ struct Times {
 Times t;
 GpuLife gpuLife;
 
-bool simulate(int N, int M, int iterations) {
+bool simulate(int N, int M, int iterations, size_t localWorkSize) {
     using std::chrono::microseconds;
     gpuLife.resize(N, M);
     if (!gpuLife.allocBuffers()) {
@@ -30,7 +30,7 @@ bool simulate(int N, int M, int iterations) {
             std::chrono::duration_cast<microseconds>(t_end - t_start).count();
 
     t_start = std::chrono::high_resolution_clock::now();
-    gpuLife.iterate(iterations);
+    gpuLife.iterate(iterations, localWorkSize);
     t_end = std::chrono::high_resolution_clock::now();
     t.execution =
             std::chrono::duration_cast<microseconds>(t_end - t_start)
@@ -49,14 +49,14 @@ bool simulate(int N, int M, int iterations) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 5) {
-        std::cerr << "Uso: " << argv[0] << " <world width> <world height> <iterations> <output_file>"
+    if (argc != 6) {
+        std::cerr << "Uso: " << argv[0] << " <world width> <world height> <iterations> <output_file> <localWorkSize>"
                   << std::endl;
         return 2;
     }
 
-    int n = std::stoi(argv[1]), m = std::stoi(argv[2]), iterations = std::stoi(argv[3]);
-    if (!simulate(n, m, iterations)) {
+    int n = std::stoi(argv[1]), m = std::stoi(argv[2]), iterations = std::stoi(argv[3]), WorkSize=std::stoi(argv[5]);
+    if (!simulate(n, m, iterations, WorkSize)) {
         std::cerr << "Error while executing the simulation" << std::endl;
         return 3;
     }

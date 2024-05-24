@@ -67,10 +67,10 @@ void GpuLife::initRandom() {
     checkError(err, "Writing initial data to buffer");
 }
 
-void GpuLife::iterate(size_t iterations) {
+void GpuLife::iterate(size_t iterations, size_t workSize) {
     cl_int err;
 
-    size_t localWorkSize[] = {32, 32};
+    size_t localWorkSize[] = {workSize, workSize};
     size_t globalWorkSize[] = {m_worldWidth, m_worldHeight};
 
     for (size_t i = 0; i < iterations; ++i) {
