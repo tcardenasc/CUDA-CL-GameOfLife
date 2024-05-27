@@ -1,4 +1,6 @@
 #include "opencl_setup.h"
+#include <filesystem>
+namespace fs = std::filesystem;
 
 cl_context createContext() {
     cl_int err;
@@ -10,9 +12,9 @@ cl_context createContext() {
     checkError(err, "Finding platforms");
 
     cl_context_properties contextProperties[] = {
-        CL_CONTEXT_PLATFORM,
-        (cl_context_properties)platformId,
-        0
+            CL_CONTEXT_PLATFORM,
+            (cl_context_properties)platformId,
+            0
     };
     context = clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_GPU, NULL, NULL, &err);
     checkError(err, "Creating context");
@@ -39,6 +41,7 @@ cl_command_queue createCommandQueue(cl_context context, cl_device_id *device) {
     *device = devices[0];
 
     cl_command_queue commandQueue = clCreateCommandQueue(context, *device, 0, &err);
+
     checkError(err, "Creating command queue");
 
     return commandQueue;
@@ -46,8 +49,15 @@ cl_command_queue createCommandQueue(cl_context context, cl_device_id *device) {
 
 cl_program createProgram(cl_context context, cl_device_id device, const char* fileName) {
     cl_int err;
-    std::ifstream kernelFile(fileName, std::ios::in);
+    auto currentPath = fs::current_path();
+    while(currentPath.filename() != "CUDA-CL-GameOfLife") {
+        currentPath = currentPath.parent_path();
+    }
+    currentPath /= "build/src/cl/";
+    std::ifstream kernelFile(currentPath.string() + fileName, std::ios::in);
     if (!kernelFile.is_open()) {
+        std::cerr << "Current path is " << fs::current_path() << '\n';
+        std::cerr << "Folder name " << fs::current_path().filename() << '\n';
         std::cerr << "Failed to open file for reading: " << fileName << std::endl;
         exit(1);
     }

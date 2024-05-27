@@ -1,5 +1,8 @@
 
 build/
 .cache/
+.idea/
+cmake-build-debug/
+out.txt
 
 *.DS_Store

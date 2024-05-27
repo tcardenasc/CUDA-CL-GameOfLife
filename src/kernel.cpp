@@ -57,7 +57,7 @@ void CpuLife::initRandom() {
     }
 }
 
-void CpuLife::iterateSerial(size_t iterations) {
+void CpuLife::iterateSerial(size_t iterations, int debug, int if_use) {
     for (size_t i = 0; i < iterations; ++i) {
         for (size_t y = 0; y < m_worldHeight; ++y) {
             size_t y0 = ((y + m_worldHeight - 1) % m_worldHeight) * m_worldWidth;
@@ -68,16 +68,23 @@ void CpuLife::iterateSerial(size_t iterations) {
                 size_t x0 = (x + m_worldWidth - 1) % m_worldWidth;
                 size_t x2 = (x + 1) % m_worldWidth;
 
-                ubyte aliveCells = countAliveCells(m_data, x0, x, x2, y0, y1, y2);
+                ubyte aliveCells;
+                if (if_use) {
+                    aliveCells = countAliveCellsIf(m_data, x0, x, x2, y0, y1, y2, m_worldWidth);
+                } else {
+                    aliveCells = countAliveCells(m_data, x0, x, x2, y0, y1, y2);
+                }
                 m_resultData[y1 + x] = aliveCells == 3 || (aliveCells == 2 && m_data[x + y1]) ? 1 : 0;
             }
         }
 
         std::swap(m_data, m_resultData);
 
-//        uncomment below lines to see the simulation
-//        Clear();
-//        std::cout << *this;
+        if (debug) {
+            Clear();
+            std::cout << "Iteration: " << i << std::endl;
+            std::cout << *this;
+        }
     }
 }
 

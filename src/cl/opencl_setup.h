@@ -1,9 +1,11 @@
 #ifndef OPENCL_SETUP_H
 #define OPENCL_SETUP_H
 
-#define CL_TARGET_OPENCL_VERSION 220
-//#include <CL/cl.h> Hola Tomas esta pa los que no son apple
-#include <OpenCL/cl.h>
+#ifdef __APPLE__
+#include <OpenCL/opencl.hpp>
+#else
+#include <CL/opencl.hpp>
+#endif  // DEBUG
 #include <vector>
 #include <iostream>
 #include <fstream>

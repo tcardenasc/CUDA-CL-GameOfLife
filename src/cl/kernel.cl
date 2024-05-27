@@ -1,16 +1,20 @@
 __kernel void game_of_life(__global uchar* data, __global uchar* result, uint width, uint height) {
-    int x = get_global_id(0);
-    int y = get_global_id(1);
+    uint worldSize = width * height;
+    for (uint cellId = get_global_id(0); cellId < worldSize; cellId += get_global_size(0)) {
+            uint x = cellId % width;
+            uint yAbs = cellId - x;
 
-    int x0 = (x + width - 1) % width;
-    int x2 = (x + 1) % width;
-    int y0 = (y + height - 1) % height;
-    int y2 = (y + 1) % height;
+            uint xLeft = (x + width - 1) % width;
+            uint xRight = (x + 1) % width;
 
-    int aliveCells = data[x0 + y0 * width] + data[x + y0 * width] + data[x2 + y0 * width]
-                   + data[x0 + y * width] + data[x2 + y * width]
-                   + data[x0 + y2 * width] + data[x + y2 * width] + data[x2 + y2 * width];
+            uint yAbsUp = (yAbs + worldSize - width) % worldSize;
+            uint yAbsDown = (yAbs + width) % worldSize;
 
-    uchar currentState = data[x + y * width];
-    result[x + y * width] = (aliveCells == 3 || (aliveCells == 2 && currentState)) ? 1 : 0;
+            // Count alive cells.
+            uint aliveCells = data[xLeft + yAbsUp] + data[x + yAbsUp] + data[xRight + yAbsUp]
+                              + data[xLeft + yAbs] + data[xRight + yAbs]
+                              + data[xLeft + yAbsDown] + data[x + yAbsDown] + data[xRight + yAbsDown];
+
+            result[x + yAbs] = aliveCells == 3 || (aliveCells == 2 && data[x + yAbs]) ? 1 : 0;
+    }
 }

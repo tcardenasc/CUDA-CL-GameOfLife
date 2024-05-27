@@ -1,3 +1,4 @@
+
 // kernel.h
 #ifndef KERNEL_H
 #define KERNEL_H
@@ -14,10 +15,10 @@ private:
     cl_command_queue commandQueue;
     cl_program program;
     cl_kernel kernel;
-    cl_device_id device;
+    cl_device_id device{};
 
-    cl_mem dataBuffer;
-    cl_mem resultBuffer;
+    cl_mem dataBuffer{};
+    cl_mem resultBuffer{};
 
     size_t m_worldWidth;
     size_t m_worldHeight;
@@ -32,7 +33,7 @@ public:
     bool allocBuffers();
     void resize(size_t width, size_t height);
     void initRandom();
-    void iterate(size_t iterations);
+    void iterate(size_t iterations, size_t workSize, int debug, int if_use);
     friend std::ostream &operator<<(std::ostream &os, GpuLife &gpuLife);
 };
 
