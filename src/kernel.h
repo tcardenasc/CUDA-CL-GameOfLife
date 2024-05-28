@@ -5,12 +5,12 @@ typedef unsigned char ubyte;
 
 class CpuLife {
 private:
-    static inline ubyte countAliveCells(ubyte *data, size_t x0, size_t x1, size_t x2, size_t y0, size_t y1, size_t y2) {
+    static inline ubyte countAliveCells(const ubyte *data, size_t x0, size_t x1, size_t x2, size_t y0, size_t y1, size_t y2) {
         return data[x0 + y0] + data[x1 + y0] + data[x2 + y0]
                + data[x0 + y1] + data[x2 + y1]
                + data[x0 + y2] + data[x1 + y2] + data[x2 + y2];
     }
-    static ubyte countAliveCellsIf(ubyte *data, size_t x0, size_t x1, size_t x2, size_t y0, size_t y1, size_t y2, size_t width) {
+    static inline ubyte countAliveCellsIf(const ubyte *data, size_t x0, size_t x1, size_t x2, size_t y0, size_t y1, size_t y2) {
         size_t xOffsets[3] = {x0, x1, x2};
         size_t yOffsets[3] = {y0, y1, y2};
 

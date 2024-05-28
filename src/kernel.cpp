@@ -58,6 +58,8 @@ void CpuLife::initRandom() {
 }
 
 void CpuLife::iterateSerial(size_t iterations, int debug, int if_use) {
+    auto func = if_use ? countAliveCellsIf : countAliveCells;
+
     for (size_t i = 0; i < iterations; ++i) {
         for (size_t y = 0; y < m_worldHeight; ++y) {
             size_t y0 = ((y + m_worldHeight - 1) % m_worldHeight) * m_worldWidth;
@@ -68,12 +70,7 @@ void CpuLife::iterateSerial(size_t iterations, int debug, int if_use) {
                 size_t x0 = (x + m_worldWidth - 1) % m_worldWidth;
                 size_t x2 = (x + 1) % m_worldWidth;
 
-                ubyte aliveCells;
-                if (if_use) {
-                    aliveCells = countAliveCellsIf(m_data, x0, x, x2, y0, y1, y2, m_worldWidth);
-                } else {
-                    aliveCells = countAliveCells(m_data, x0, x, x2, y0, y1, y2);
-                }
+                ubyte aliveCells = func(m_data, x0, x, x2, y0, y1, y2);
                 m_resultData[y1 + x] = aliveCells == 3 || (aliveCells == 2 && m_data[x + y1]) ? 1 : 0;
             }
         }

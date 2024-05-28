@@ -57,13 +57,31 @@ void GpuLife::resize(size_t width, size_t height) {
     m_worldHeight = height;
 }
 
-void GpuLife::initRandom() {
-    std::vector<ubyte> data(m_worldSize);
-    for (size_t i = 0; i < m_worldSize; ++i) {
+//void GpuLife::initRandom() {
+//    std::vector<ubyte> data(m_worldSize);
+//    for (size_t i = 0; i < m_worldSize; ++i) {
+//        data[i] = m_randomGen() & 1;
+//    }
+//
+//    cl_int err = clEnqueueWriteBuffer(commandQueue, dataBuffer, CL_TRUE, 0, sizeof(ubyte) * m_worldSize, data.data(), 0,
+//                                      nullptr, nullptr);
+//    checkError(err, "Writing initial data to buffer");
+//}
+
+void GpuLife::initRandom(ubyte *data, size_t size) {
+    if (size != m_worldSize) {
+        throw std::runtime_error("Size mismatch");
+    }
+    for (size_t i = 0; i < size; i++) {
         data[i] = m_randomGen() & 1;
     }
+}
 
-    cl_int err = clEnqueueWriteBuffer(commandQueue, dataBuffer, CL_TRUE, 0, sizeof(ubyte) * m_worldSize, data.data(), 0,
+void GpuLife::copyToDevice(ubyte *data, size_t size) {
+    if (size != m_worldSize) {
+        throw std::runtime_error("Size mismatch");
+    }
+    cl_int err = clEnqueueWriteBuffer(commandQueue, dataBuffer, CL_TRUE, 0, sizeof(ubyte) * m_worldSize, data, 0,
                                       nullptr, nullptr);
     checkError(err, "Writing initial data to buffer");
 }
@@ -73,6 +91,10 @@ void GpuLife::iterate(size_t iterations, size_t workSize, int debug, int if_use)
 
     size_t localWorkSize[] = {workSize};
     size_t globalWorkSize[] = {(m_worldSize + workSize - 1) / workSize * workSize};
+
+    if (if_use) {
+        kernel = clCreateKernel(program, "game_of_life_if", nullptr);
+    }
 
     for (size_t i = 0; i < iterations; ++i) {
         err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &dataBuffer);

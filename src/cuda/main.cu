@@ -21,7 +21,7 @@ GpuLife gpuLife;
 
 bool simulate(int worldWidth, int worldHeight, int blockSize, int iterations, int debug, int if_use) {
     using std::chrono::microseconds;
-    int worldSize = worldWidth * worldHeight;
+    uint worldSize = worldWidth * worldHeight;
     auto data = new ubyte[worldSize];
     auto resultData = new ubyte[worldSize];
 

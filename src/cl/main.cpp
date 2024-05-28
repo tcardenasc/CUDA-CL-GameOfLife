@@ -26,10 +26,19 @@ bool simulate(int N, int M, int localWorkSize, int iterations, int debug, int if
         return false;
     }
 
+    uint worldSize = N * M;
+    auto data = new ubyte[worldSize];
     auto t_start = std::chrono::high_resolution_clock::now();
-    gpuLife.initRandom();
+    gpuLife.initRandom(data, worldSize);
     auto t_end = std::chrono::high_resolution_clock::now();
     t.create_data =
+            std::chrono::duration_cast<microseconds>(t_end - t_start).count();
+
+    // Copy values from host variables to device
+    t_start = std::chrono::high_resolution_clock::now();
+    gpuLife.copyToDevice(data, worldSize);
+    t_end = std::chrono::high_resolution_clock::now();
+    t.copy_to_device =
             std::chrono::duration_cast<microseconds>(t_end - t_start).count();
 
     t_start = std::chrono::high_resolution_clock::now();

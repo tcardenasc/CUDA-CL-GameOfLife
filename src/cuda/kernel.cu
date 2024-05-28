@@ -35,6 +35,41 @@ __global__ void lifeKernel(const ubyte *lifeData, uint worldWidth, uint worldHei
     }
 }
 
+__global__ void lifeKernelIf(const ubyte *lifeData, uint worldWidth, uint worldHeight, ubyte *resultLifeData) {
+    uint worldSize = worldWidth * worldHeight;
+
+    for (uint cellId = blockIdx.x * blockDim.x + threadIdx.x;
+         cellId < worldSize;
+         cellId += blockDim.x * gridDim.x) {
+
+        uint x = cellId % worldWidth;
+        uint yAbs = cellId - x;
+
+        uint xLeft = (x + worldWidth - 1) % worldWidth;
+        uint xRight = (x + 1) % worldWidth;
+
+        uint yAbsUp = (yAbs + worldSize - worldWidth) % worldSize;
+        uint yAbsDown = (yAbs + worldWidth) % worldSize;
+
+        // Count alive cells using ifs
+        uint aliveCells = 0;
+        uint xOffsets[3] = {xLeft, x, xRight};
+        uint yOffsets[3] = {yAbsUp, yAbs, yAbsDown};
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                if (i == 1 && j == 1) {
+                    continue;
+                }
+                if (lifeData[xOffsets[i] + yOffsets[j]]) {
+                    aliveCells++;
+                }
+            }
+        }
+
+        resultLifeData[x + yAbs] = aliveCells == 3 || (aliveCells == 2 && lifeData[x + yAbs]) ? 1 : 0;
+    }
+}
+
 GpuLife::GpuLife() :
         d_data(nullptr),
         d_resultData(nullptr),
@@ -90,9 +125,10 @@ void GpuLife::copyToDevice(ubyte *data, size_t size) {
 
 void GpuLife::iterate(size_t iterations, size_t blockSize, int debug, int if_use) {
     size_t gridSize = (m_worldWidth * m_worldHeight + blockSize - 1) / blockSize;
+    auto func = if_use ? lifeKernelIf : lifeKernel;
 
     for (size_t i = 0; i < iterations; i++) {
-        lifeKernel<<<gridSize, blockSize>>>(d_data, m_worldWidth, m_worldHeight, d_resultData);
+        func<<<gridSize, blockSize>>>(d_data, m_worldWidth, m_worldHeight, d_resultData);
         HANDLE_ERROR(cudaGetLastError());
         HANDLE_ERROR(cudaDeviceSynchronize());
         std::swap(d_data, d_resultData);
